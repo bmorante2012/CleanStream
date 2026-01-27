@@ -12,7 +12,9 @@
       "Bash($env:DATABASE_URL=\"file:./dev.db\")",
       "Bash(DATABASE_URL=\"file:./dev.db\" npx next dev:*)",
       "Bash(curl:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(git config:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
