@@ -1,0 +1,70 @@
+/* CleanStream Content Script Styles */
+
+#cleanstream-overlay {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 9999;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.cleanstream-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 20px;
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cleanstream-badge:hover {
+  transform: scale(1.05);
+}
+
+#cleanstream-overlay.active .cleanstream-badge {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+}
+
+.cleanstream-icon {
+  font-size: 16px;
+}
+
+.cleanstream-text {
+  white-space: nowrap;
+}
+
+.cleanstream-controls {
+  margin-top: 8px;
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 12px;
+  padding: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.cleanstream-btn {
+  width: 100%;
+  padding: 10px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cleanstream-btn:hover {
+  background: #2563eb;
+}
+
+.cleanstream-btn:active {
+  transform: scale(0.98);
+}

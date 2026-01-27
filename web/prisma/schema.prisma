@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model - reactors who create sync packs
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  name          String?
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Relations
+  syncPacks     SyncPack[]
+  ratings       Rating[]
+  accounts      Account[]
+  sessions      Session[]
+}
+
+// NextAuth.js required models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Core: SyncPack - the main data unit
+model SyncPack {
+  id                  String   @id @default(cuid())
+  slug                String   @unique  // URL-friendly identifier
+
+  // Video references (we store URLs, never the content)
+  reactionYoutubeUrl  String   // The reaction video URL
+  reactionTitle       String?  // Cached title for display
+  officialYoutubeUrl  String   // The official music video/audio URL
+  officialTitle       String?  // Cached title for display
+
+  // Sync timing data
+  baseOffsetMs        Int      @default(0)  // Base offset in milliseconds
+  driftCorrectionMs   Int      @default(0)  // Drift correction per minute
+
+  // Optional segment data (JSON for flexibility)
+  // Format: [{ start: number, end: number, label?: string }]
+  segments            String?  // JSON string of segments
+
+  // Metadata
+  notes               String?  // Reactor's notes about sync points
+  version             Int      @default(1)
+  isPublished         Boolean  @default(false)
+
+  // Timestamps
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  creatorId           String
+  creator             User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  ratings             Rating[]
+  viewEvents          ViewEvent[]
+}
+
+// Rating - viewers rate both reaction and track
+model Rating {
+  id              String   @id @default(cuid())
+
+  // Ratings (1-5 scale)
+  reactionRating  Int      // How good was the reaction?
+  trackRating     Int      // How good was the original track?
+  comment         String?  // Optional text feedback
+
+  // Anonymous viewer identifier (stored in browser, not account-linked)
+  viewerFingerprint String
+
+  createdAt       DateTime @default(now())
+
+  // Relations
+  syncPackId      String
+  syncPack        SyncPack @relation(fields: [syncPackId], references: [id], onDelete: Cascade)
+
+  // Optional: if viewer is logged in
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([syncPackId, viewerFingerprint]) // One rating per viewer per pack
+}
+
+// ViewEvent - basic analytics
+model ViewEvent {
+  id          String   @id @default(cuid())
+  syncPackId  String
+  syncPack    SyncPack @relation(fields: [syncPackId], references: [id], onDelete: Cascade)
+
+  // Event type: 'view', 'sync_start', 'sync_complete'
+  eventType   String
+
+  // Optional metadata (JSON)
+  metadata    String?
+
+  createdAt   DateTime @default(now())
+}

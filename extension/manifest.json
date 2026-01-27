@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "CleanStream",
+  "description": "Sync reaction videos with official music sources",
+  "version": "0.1.0",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "https://www.youtube.com/*",
+    "https://youtube.com/*",
+    "http://localhost:3001/*"
+  ],
+  "background": {
+    "service_worker": "src/background.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*", "https://youtube.com/*"],
+      "js": ["src/content.ts"],
+      "css": ["src/content.css"]
+    }
+  ],
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "action": {
+    "default_title": "CleanStream"
+  }
+}
