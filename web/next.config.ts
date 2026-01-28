@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  // Enable experimental features for better performance
+  // Configure turbopack root directory
 }
 
 export default nextConfig
